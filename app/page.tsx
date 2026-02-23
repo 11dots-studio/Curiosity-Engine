@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar"
+import { GlobalSearchBar } from "@/components/global-search-bar"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,6 +14,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import Link from "next/link"
 
 export default function Page() {
   return (
@@ -43,12 +45,15 @@ export default function Page() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="bg-muted/50 aspect-video rounded-xl" />
+            <Link href="/editor" className="bg-muted/50 aspect-video rounded-xl transition-colors hover:bg-muted/80 flex items-center justify-center border-2 border-dashed border-transparent hover:border-primary/20">
+              <span className="text-sm font-medium">Open Code Editor</span>
+            </Link>
             <div className="bg-muted/50 aspect-video rounded-xl" />
             <div className="bg-muted/50 aspect-video rounded-xl" />
           </div>
           <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
         </div>
+        <GlobalSearchBar />
       </SidebarInset>
     </SidebarProvider>
   )
