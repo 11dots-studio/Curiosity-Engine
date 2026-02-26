@@ -43,7 +43,7 @@ const EditorAppMenuBar = memo(function EditorAppMenuBar() {
     <div className="flex items-center gap-1 overflow-hidden">
       {/* Files Menu */}
       <DropdownMenu>
-        <DropdownMenuTrigger className="text-sm font-medium px-2 py-1 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-sm outline-none cursor-default transition-colors">
+        <DropdownMenuTrigger className="text-[13px] font-[450] px-2.5 py-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/[0.06] dark:hover:bg-white/[0.07] rounded-md outline-none cursor-default transition-all duration-150 ease-out focus-visible:outline-none">
           Files
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-48 text-sm">
@@ -60,7 +60,7 @@ const EditorAppMenuBar = memo(function EditorAppMenuBar() {
 
       {/* Edit Menu */}
       <DropdownMenu>
-        <DropdownMenuTrigger className="text-sm font-medium px-2 py-1 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-sm outline-none cursor-default transition-colors">
+        <DropdownMenuTrigger className="text-[13px] font-[450] px-2.5 py-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/[0.06] dark:hover:bg-white/[0.07] rounded-md outline-none cursor-default transition-all duration-150 ease-out focus-visible:outline-none">
           Edit
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-48 text-sm">
@@ -81,7 +81,7 @@ const EditorAppMenuBar = memo(function EditorAppMenuBar() {
 
       {/* Layout Menu */}
       <DropdownMenu>
-        <DropdownMenuTrigger className="text-sm font-medium px-2 py-1 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-sm outline-none cursor-default transition-colors">
+        <DropdownMenuTrigger className="text-[13px] font-[450] px-2.5 py-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/[0.06] dark:hover:bg-white/[0.07] rounded-md outline-none cursor-default transition-all duration-150 ease-out focus-visible:outline-none">
           Layout
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-48 text-sm">
@@ -98,8 +98,8 @@ const EditorAppMenuBar = memo(function EditorAppMenuBar() {
           <DropdownMenuItem onClick={() => setShowMinimap(!showMinimap)}>
             {showMinimap ? '✓ ' : ''}Toggle Minimap
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setWordWrap(wordWrap === "on" ? "off" : "on")}>
-            {wordWrap === "on" ? '✓ ' : ''}Toggle Word Wrap
+          <DropdownMenuItem onClick={() => setWordWrap(!wordWrap)}>
+            {wordWrap ? '✓ ' : ''}Toggle Word Wrap
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -135,15 +135,15 @@ const EditorHeader = memo(function EditorHeader() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-30 flex h-11 w-full shrink-0 items-center justify-between border-b border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-950 px-3">
+    <header className="fixed top-0 left-0 right-0 z-30 flex h-11 w-full shrink-0 items-center justify-between border-b border-black/[0.06] dark:border-white/[0.06] bg-white/95 dark:bg-[#1c1c1e]/95 backdrop-blur-xl px-3" style={{ boxShadow: 'var(--hig-shadow-sm)' }}>
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <div className="flex items-center gap-2 mr-2">
-          <Link href="/" className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors hidden md:flex items-center gap-1 text-xs font-medium px-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 h-7">
+          <Link href="/" className="text-[#6e6e73] hover:text-[#1d1d1f] dark:text-zinc-400 dark:hover:text-zinc-100 transition-all duration-150 ease-out hidden md:flex items-center gap-1 text-[13px] font-[450] px-2 rounded-md hover:bg-black/[0.06] dark:hover:bg-white/[0.07] h-7">
             <ChevronLeft className="size-4" />
             Dashboard
           </Link>
-          <Separator orientation="vertical" className="h-4 bg-zinc-300 dark:bg-zinc-700 mx-1 hidden md:block" />
-          <SidebarTrigger className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors size-6 [&>svg]:size-3.5" />
+          <Separator orientation="vertical" className="h-4 bg-black/[0.08] dark:bg-white/[0.08] mx-1 hidden md:block" />
+          <SidebarTrigger className="text-[#6e6e73] hover:text-[#1d1d1f] dark:text-zinc-400 dark:hover:text-zinc-100 transition-all duration-150 ease-out size-6 [&>svg]:size-3.5 hover:bg-black/[0.06] dark:hover:bg-white/[0.07] rounded-md" />
         </div>
 
         <div className="flex items-center min-w-0">
@@ -155,12 +155,12 @@ const EditorHeader = memo(function EditorHeader() {
               onChange={(e) => setTitle(e.target.value)}
               onBlur={handleTitleSubmit}
               onKeyDown={handleKeyDown}
-              className="h-7 w-[200px] text-sm font-medium text-zinc-800 dark:text-zinc-200 bg-transparent border-none outline-none focus:ring-0 px-1"
+              className="h-7 w-[200px] text-[14px] font-[500] text-[#1d1d1f] dark:text-[#f5f5f7] bg-transparent border-none outline-none focus:ring-0 px-1 placeholder:text-[#86868b]"
             />
           ) : (
             <span
               onClick={() => setIsEditingTitle(true)}
-              className="text-sm font-medium text-zinc-600 dark:text-zinc-300 cursor-text hover:text-zinc-900 dark:hover:text-white transition-colors truncate px-1 max-w-[300px]"
+              className="text-[14px] font-[500] text-[#1d1d1f] dark:text-[#f5f5f7] cursor-text opacity-80 hover:opacity-100 transition-all duration-150 ease-out truncate px-1 max-w-[300px]"
               title="Click to edit"
             >
               {title}
@@ -182,7 +182,7 @@ const EditorHeader = memo(function EditorHeader() {
 
 function EditorPageContent() {
   const { toggleSidebar } = useSidebar()
-  const { createFile, activeFile, splitViewMode, setSplitViewMode, editorRef, deleteFile, files, wordWrap, setWordWrap } = useEditor()
+  const { createFile, deleteFile, activeFile, splitViewMode, setSplitViewMode, editorRef, wordWrap, setWordWrap, showMinimap, setShowMinimap } = useEditor()
   const [isPaletteOpen, setIsPaletteOpen] = useState(false)
 
   const commands: Command[] = useMemo(() => [
@@ -230,7 +230,7 @@ function EditorPageContent() {
       // Toggle Word Wrap: Alt + Z
       else if (e.altKey && e.key.toLowerCase() === 'z') {
         e.preventDefault()
-        setWordWrap(wordWrap === "on" ? "off" : "on")
+        setWordWrap(!wordWrap)
       }
     }
 
@@ -264,7 +264,7 @@ function EditorPageContent() {
 export default function Page() {
   return (
     <EditorProvider>
-      <SidebarProvider className="flex flex-col h-screen w-full overflow-hidden bg-zinc-50 dark:bg-[#18181b] text-zinc-900 dark:text-zinc-100 selection:bg-zinc-200 dark:selection:bg-zinc-800 p-0 m-0">
+      <SidebarProvider className="flex flex-col h-screen w-full overflow-hidden bg-[#fafafa] dark:bg-[#141414] text-[#1d1d1f] dark:text-[#f5f5f7] selection:bg-[#0071e3]/15 dark:selection:bg-[#0a84ff]/20 p-0 m-0">
         <EditorPageContent />
       </SidebarProvider>
     </EditorProvider>

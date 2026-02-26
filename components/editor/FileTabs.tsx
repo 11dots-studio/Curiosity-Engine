@@ -1,7 +1,5 @@
-"use client"
-
 import React, { memo } from "react"
-import { useEditor } from "@/context/EditorContext"
+import { useEditor, type FileModel } from "@/context/EditorContext"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,11 +11,23 @@ import {
 import { X, FileCode } from "lucide-react"
 
 export const FileTabs = memo(function FileTabs() {
-    const { files, activeFileId, switchFile, deleteFile } = useEditor()
+    const { files, activeFileId, switchFile, closeFile } = useEditor()
+
+    const getTabLabel = (file: FileModel) => {
+        const hasCollision = files.some(f => f.name === file.name && f.id !== file.id)
+        if (!hasCollision) return file.name
+        // Show relative path if there's a name collision
+        const parts = file.path.split('/')
+        if (parts.length > 1) {
+            const parent = parts[parts.length - 2]
+            return parent ? `${parent}/${file.name}` : file.name
+        }
+        return file.name
+    }
 
     if (files.length === 0) {
         return (
-            <div className="flex items-center px-3 py-1 border-b text-xs text-muted-foreground">
+            <div className="flex items-center px-4 py-2 border-b border-black/[0.06] dark:border-white/[0.06] text-[12px] text-[#86868b]">
                 No files open
             </div>
         )
@@ -25,50 +35,42 @@ export const FileTabs = memo(function FileTabs() {
 
     return (
         <TooltipProvider>
-            <div className="flex items-center border-b border-zinc-200/50 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-950/50 overflow-hidden w-full">
-                <Tabs value={activeFileId} onValueChange={switchFile} className="w-full flex min-w-0">
-                    <TabsList
-                        className="h-10 w-full flex items-center justify-start rounded-none bg-transparent px-2 gap-1 overflow-hidden"
-                    >
+            <div className="flex items-center border-b border-black/[0.06] dark:border-white/[0.06] bg-[#f5f5f7] dark:bg-[#1c1c1e] overflow-hidden w-full">
+                <div className="w-full flex min-w-0">
+                    <div className="h-10 w-full flex items-center justify-start rounded-none bg-transparent px-2 gap-0.5 overflow-hidden">
                         {files.map((file) => (
-                            <div key={file.id} className="relative flex items-center group/tab mt-1 shrink min-w-0 max-w-[180px]">
-                                <TabsTrigger
-                                    value={file.id}
-                                    className="h-9 gap-2 pr-8 pl-3 text-xs font-medium rounded-t-md border border-transparent 
-                                    data-[state=active]:border-zinc-200/50 dark:data-[state=active]:border-zinc-800/50 
-                                    data-[state=active]:border-b-white dark:data-[state=active]:border-b-zinc-900 
-                                    data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-900
-                                    data-[state=active]:shadow-[0_-2px_0_0_rgba(0,0,0,0.02)]
-                                    text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 
-                                    hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 
-                                    data-[state=active]:text-foreground 
-                                    transition-all duration-200 ease-out flex w-full min-w-0"
-                                >
-                                    <FileCode className="size-3.5 shrink-0 opacity-70" />
-                                    <span className="truncate whitespace-nowrap min-w-0 flex-1 text-left">{file.name}</span>
-                                </TabsTrigger>
-                                {files.length > 1 && (
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                className="absolute right-1 top-[7px] w-5 h-5 p-0 rounded-sm opacity-0 group-hover/tab:opacity-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all duration-200"
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    deleteFile(file.id)
-                                                }}
-                                                aria-label={`Close ${file.name}`}
-                                            >
-                                                <X className="size-3 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100" />
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>Close {file.name}</TooltipContent>
-                                    </Tooltip>
-                                )}
+                            <div
+                                key={file.id}
+                                onClick={() => switchFile(file.id)}
+                                className={[
+                                    "relative flex items-center group/tab mt-1 shrink min-w-0 max-w-[180px] h-[34px] gap-1.5 pr-8 pl-3 text-[12px] font-[450] rounded-t-[6px] border border-transparent cursor-default transition-all duration-160 ease-out",
+                                    activeFileId === file.id
+                                        ? "bg-white dark:bg-[#1e1e1e] border-black/[0.07] dark:border-white/[0.07] border-b-white dark:border-b-[#1e1e1e] text-[#1d1d1f] dark:text-[#f5f5f7] shadow-[0_-1px_0_0_var(--hig-accent)_inset]"
+                                        : "text-[#86868b] dark:text-[rgba(235,235,240,0.45)] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] hover:bg-black/[0.05] dark:hover:bg-white/[0.05]"
+                                ].join(" ")}
+                            >
+                                <FileCode className="size-3 shrink-0 opacity-60" />
+                                <span className="truncate whitespace-nowrap min-w-0 flex-1 text-left">{getTabLabel(file)}</span>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            className="absolute right-1.5 top-[7px] w-[18px] h-[18px] p-0 rounded-[4px] opacity-0 group-hover/tab:opacity-50 hover:!opacity-100 hover:bg-black/[0.08] dark:hover:bg-white/[0.10] transition-all duration-150 ease-out"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                closeFile(file.id)
+                                            }}
+                                            aria-label={`Close ${file.name}`}
+                                        >
+                                            <X className="size-2.5 text-[#6e6e73] dark:text-zinc-400" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="bottom" className="text-[11px]">Close {file.name}</TooltipContent>
+                                </Tooltip>
                             </div>
                         ))}
-                    </TabsList>
-                </Tabs>
+                    </div>
+                </div>
             </div>
         </TooltipProvider>
     )

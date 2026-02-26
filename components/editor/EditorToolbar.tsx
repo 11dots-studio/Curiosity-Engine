@@ -60,9 +60,9 @@ export const EditorToolbar = memo(function EditorToolbar() {
                 {/* Language switcher */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="gap-1.5 text-xs h-7">
+                        <Button variant="ghost" size="sm" className="gap-1.5 text-[13px] font-[450] h-7 px-2.5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/[0.06] dark:hover:bg-white/[0.07] rounded-md transition-all duration-150 ease-out">
                             {displayName}
-                            <ChevronDown className="size-3 opacity-60" />
+                            <ChevronDown className="size-3 opacity-50" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start">
@@ -83,7 +83,7 @@ export const EditorToolbar = memo(function EditorToolbar() {
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Separator orientation="vertical" className="mx-1 h-4 hidden sm:block" />
+                <Separator orientation="vertical" className="mx-1 h-3.5 bg-black/[0.08] dark:bg-white/[0.08] hidden sm:block" />
 
                 {/* Split View modes */}
                 <div className="hidden sm:flex items-center gap-0.5">
@@ -93,7 +93,7 @@ export const EditorToolbar = memo(function EditorToolbar() {
                                 variant="ghost"
                                 size="icon-sm"
                                 onClick={() => setSplitViewMode("single")}
-                                className={splitViewMode === "single" ? "bg-accent" : ""}
+                                className={splitViewMode === "single" ? "bg-[#0071e3]/10 text-[#0071e3] dark:bg-[#0a84ff]/15 dark:text-[#0a84ff]" : "text-zinc-500 hover:bg-black/[0.06] dark:hover:bg-white/[0.07]"}
                                 aria-label="Single view"
                             >
                                 <Square className="size-3.5" />
@@ -108,7 +108,7 @@ export const EditorToolbar = memo(function EditorToolbar() {
                                 variant="ghost"
                                 size="icon-sm"
                                 onClick={() => setSplitViewMode("horizontal")}
-                                className={splitViewMode === "horizontal" ? "bg-accent" : ""}
+                                className={splitViewMode === "horizontal" ? "bg-[#0071e3]/10 text-[#0071e3] dark:bg-[#0a84ff]/15 dark:text-[#0a84ff]" : "text-zinc-500 hover:bg-black/[0.06] dark:hover:bg-white/[0.07]"}
                                 aria-label="Split horizontal"
                             >
                                 <Columns className="size-3.5" />
@@ -123,7 +123,7 @@ export const EditorToolbar = memo(function EditorToolbar() {
                                 variant="ghost"
                                 size="icon-sm"
                                 onClick={() => setSplitViewMode("vertical")}
-                                className={splitViewMode === "vertical" ? "bg-accent" : ""}
+                                className={splitViewMode === "vertical" ? "bg-[#0071e3]/10 text-[#0071e3] dark:bg-[#0a84ff]/15 dark:text-[#0a84ff]" : "text-zinc-500 hover:bg-black/[0.06] dark:hover:bg-white/[0.07]"}
                                 aria-label="Split vertical"
                             >
                                 <Rows className="size-3.5" />
@@ -133,7 +133,7 @@ export const EditorToolbar = memo(function EditorToolbar() {
                     </Tooltip>
                 </div>
 
-                <Separator orientation="vertical" className="mx-1 h-4" />
+                <Separator orientation="vertical" className="mx-1 h-3.5 bg-black/[0.08] dark:bg-white/[0.08]" />
 
                 {/* Format */}
                 <Tooltip>
@@ -144,6 +144,7 @@ export const EditorToolbar = memo(function EditorToolbar() {
                             onClick={handleFormat}
                             disabled={!activeFile}
                             aria-label="Format document"
+                            className="text-zinc-500 hover:bg-black/[0.06] dark:hover:bg-white/[0.07] disabled:opacity-30"
                         >
                             <AlignLeft className="size-4" />
                         </Button>
@@ -160,6 +161,7 @@ export const EditorToolbar = memo(function EditorToolbar() {
                             onClick={handleRename}
                             disabled={!activeFile}
                             aria-label="Rename symbol"
+                            className="text-zinc-500 hover:bg-black/[0.06] dark:hover:bg-white/[0.07] disabled:opacity-30"
                         >
                             <Tag className="size-4" />
                         </Button>
@@ -167,7 +169,7 @@ export const EditorToolbar = memo(function EditorToolbar() {
                     <TooltipContent>Rename Symbol (F2)</TooltipContent>
                 </Tooltip>
 
-                <Separator orientation="vertical" className="mx-1 h-4" />
+                <Separator orientation="vertical" className="mx-1 h-3.5 bg-black/[0.08] dark:bg-white/[0.08]" />
 
                 {/* Global App Theme toggle */}
                 <Tooltip>
@@ -177,6 +179,7 @@ export const EditorToolbar = memo(function EditorToolbar() {
                             size="icon-sm"
                             onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
                             aria-label="Toggle theme"
+                            className="text-zinc-500 hover:bg-black/[0.06] dark:hover:bg-white/[0.07] transition-all duration-150 ease-out"
                         >
                             {currentTheme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
                         </Button>

@@ -47,8 +47,11 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+/* ─── Apple HIG Design Tokens ────────────────────────────────────────────── */
 :root {
   --radius: 0.625rem;
+
+  /* Shadcn base tokens */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -80,8 +83,34 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Apple HIG Semantic Tokens (light) */
+  --hig-bg-primary:   #ffffff;
+  --hig-bg-secondary: #f5f5f7;
+  --hig-bg-tertiary:  #fafafa;
+  --hig-bg-editor:    #fafafa;
+
+  --hig-text-primary:   #1d1d1f;
+  --hig-text-secondary: #6e6e73;
+  --hig-text-muted:     #86868b;
+
+  --hig-border-subtle: rgba(0, 0, 0, 0.06);
+  --hig-border-light:  rgba(0, 0, 0, 0.08);
+
+  --hig-accent:      #0071e3;
+  --hig-accent-soft: rgba(0, 113, 227, 0.10);
+
+  --hig-danger: #ff3b30;
+
+  --hig-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --hig-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --hig-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+
+  --hig-transition:      all 160ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  --hig-transition-fast: all 100ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
+/* ─── Dark Mode Token Overrides ─────────────────────────────────────────── */
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -114,13 +143,75 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Apple HIG Semantic Tokens (dark) */
+  --hig-bg-primary:   #1c1c1e;
+  --hig-bg-secondary: #2c2c2e;
+  --hig-bg-tertiary:  #3a3a3c;
+  --hig-bg-editor:    #141414;
+
+  --hig-text-primary:   #f5f5f7;
+  --hig-text-secondary: rgba(235, 235, 240, 0.64);
+  --hig-text-muted:     rgba(235, 235, 240, 0.35);
+
+  --hig-border-subtle: rgba(255, 255, 255, 0.06);
+  --hig-border-light:  rgba(255, 255, 255, 0.08);
+
+  --hig-accent:      #0a84ff;
+  --hig-accent-soft: rgba(10, 132, 255, 0.14);
+
+  --hig-danger: #ff453a;
+
+  --hig-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
+  --hig-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.40);
+  --hig-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.50);
 }
 
+/* ─── Base Styles ────────────────────────────────────────────────────────── */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+      var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "kern" 1, "liga" 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Apple accent focus ring */
+  *:focus-visible {
+    outline: 2px solid var(--hig-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Refined scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 3px;
+    transition: background 160ms ease;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.10);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.22);
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.18);
   }
 }

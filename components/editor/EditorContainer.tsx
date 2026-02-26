@@ -26,8 +26,8 @@ export const EditorContainer = memo(function EditorContainer() {
         return (
             <div className="flex flex-col h-full w-full overflow-hidden bg-background">
                 <FileTabs />
-                <div className="flex-1 min-h-0 flex items-center justify-center bg-zinc-50/50 dark:bg-zinc-950/50">
-                    <p className="text-sm text-muted-foreground">
+                <div className="flex-1 min-h-0 flex items-center justify-center bg-[#fafafa] dark:bg-[#141414]">
+                    <p className="text-[13px] font-[450] text-[#86868b] dark:text-[#ebebf059]">
                         No file open. Create a new file to get started.
                     </p>
                 </div>
@@ -66,15 +66,15 @@ export const EditorContainer = memo(function EditorContainer() {
             }}
         />
     ) : (
-        <div className="flex h-full w-full items-center justify-center bg-muted/20">
-            <p className="text-sm text-muted-foreground">Open another file to view side-by-side.</p>
+        <div className="flex h-full w-full items-center justify-center bg-transparent">
+            <p className="text-[13px] font-[450] text-[#86868b] dark:text-[#ebebf059]">Open another file to view side-by-side.</p>
         </div>
     )
 
     return (
         <div className="flex flex-col h-full w-full overflow-hidden bg-background min-h-0">
             <FileTabs />
-            <div className="flex-1 min-h-0 flex flex-col bg-zinc-50/50 dark:bg-zinc-950/50">
+            <div className="flex-1 min-h-0 flex flex-col bg-[#fafafa] dark:bg-[#141414]">
                 {splitViewMode === "single" ? (
                     <div className="flex-1 min-h-0 w-full flex">
                         {PrimaryEditor}
@@ -88,7 +88,7 @@ export const EditorContainer = memo(function EditorContainer() {
                             <div className="flex h-full w-full min-h-0 flex-1">{PrimaryEditor}</div>
                         </ResizablePanel>
 
-                        <ResizableHandle withHandle className="bg-muted-foreground/20" />
+                        <ResizableHandle withHandle className="bg-black/[0.06] dark:bg-white/[0.06] hover:bg-[#0071e3]/40 dark:hover:bg-[#0a84ff]/40 transition-colors duration-150" />
 
                         <ResizablePanel defaultSize={50} minSize={20}>
                             <div className="flex h-full w-full min-h-0 flex-1">{SecondaryEditor}</div>

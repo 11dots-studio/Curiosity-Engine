@@ -10,8 +10,8 @@ const MonacoEditor = dynamic(
     {
         ssr: false,
         loading: () => (
-            <div className="flex h-full w-full items-center justify-center bg-muted/50 rounded-xl">
-                <p className="text-sm text-muted-foreground">Loading Editor...</p>
+            <div className="flex h-full w-full items-center justify-center bg-[#fafafa] dark:bg-[#141414] rounded-none">
+                <p className="text-[13px] font-[450] text-[#86868b] tracking-tight">Loading Editor...</p>
             </div>
         ),
     }
@@ -43,7 +43,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     }
 
     return (
-        <div className="h-full w-full overflow-hidden rounded-xl border border-muted-foreground/20">
+        <div className="h-full w-full overflow-hidden border-l border-black/[0.06] dark:border-white/[0.06]">
             <MonacoEditor
                 height="100%"
                 language={language}
@@ -56,8 +56,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                     minimap: { enabled: !hideMinimap },
                     wordWrap: wordWrap,
                     fontSize: 14,
+                    lineHeight: 22,
+                    fontFamily: '"SF Mono", "JetBrains Mono", ui-monospace, monospace',
                     scrollBeyondLastLine: false,
-                    padding: { top: 16, bottom: 16 },
+                    padding: { top: 20, bottom: 20 },
                     renderWhitespace: "selection",
                     formatOnType: true,
                     formatOnPaste: true,

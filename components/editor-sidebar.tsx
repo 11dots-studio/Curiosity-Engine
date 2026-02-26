@@ -51,6 +51,7 @@ import {
   type SupportedLanguage,
   type FileModel,
 } from "@/context/EditorContext"
+import { type FileNode } from "@/types/workspace"
 
 const LANGUAGE_DISPLAY_NAMES: Record<SupportedLanguage, string> = {
   typescript: "TypeScript",
@@ -61,45 +62,43 @@ const LANGUAGE_DISPLAY_NAMES: Record<SupportedLanguage, string> = {
   css: "CSS",
 }
 
-// ─── Static tree data (preserved from original) ────────────────────────────
-type TreeItem = string | TreeItem[]
-
-function Tree({ item }: { item: TreeItem }) {
-  const [name, ...items] = Array.isArray(item) ? item : [item]
-
-  if (!items.length) {
-    return (
-      <SidebarMenuButton className="data-[active=true]:bg-transparent">
-        <File />
-        {name}
-      </SidebarMenuButton>
-    )
-  }
-
-  return (
-    <SidebarMenuItem>
-      <Collapsible
-        className="group/collapsible [&[data-state=open]>button>svg:first-child]:rotate-90"
-        defaultOpen={name === "components" || name === "ui"}
-      >
-        <CollapsibleTrigger asChild>
-          <SidebarMenuButton>
-            <ChevronRight className="transition-transform" />
-            <Folder />
-            {name}
-          </SidebarMenuButton>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <SidebarMenuSub>
-            {items.map((subItem, index) => (
-              <Tree key={index} item={subItem} />
-            ))}
-          </SidebarMenuSub>
-        </CollapsibleContent>
-      </Collapsible>
-    </SidebarMenuItem>
-  )
+// ─── Virtualized Tree Types ──────────────────────────────────────────────
+interface VirtualNode {
+  id: string
+  name: string
+  depth: number
+  type: "file" | "folder"
+  path: string
+  language?: string
+  children?: FileNode[]
 }
+
+// ─── Helper: Flattening the tree ──────────────────────────────────────────
+function flattenTree(
+  nodes: FileNode[],
+  expandedFolders: Record<string, boolean>,
+  depth = 0
+): VirtualNode[] {
+  let result: VirtualNode[] = []
+  nodes.forEach((node) => {
+    const isFolder = !!node.children
+    result.push({
+      id: node.id,
+      name: node.name,
+      depth,
+      type: isFolder ? "folder" : "file",
+      path: node.path,
+      language: node.language,
+      children: node.children
+    })
+
+    if (isFolder && expandedFolders[node.id]) {
+      result = result.concat(flattenTree(node.children!, expandedFolders, depth + 1))
+    }
+  })
+  return result
+}
+
 
 // ─── File item in the open-files section ───────────────────────────────────
 function FileItem({ file }: { file: FileModel }) {
@@ -113,13 +112,18 @@ function FileItem({ file }: { file: FileModel }) {
             <SidebarMenuButton
               isActive={file.id === activeFileId}
               onClick={() => switchFile(file.id)}
-              className="group/file"
+              className={[
+                "h-9 px-2 gap-2 text-[13px] font-[450] transition-all duration-150 ease-out group/file",
+                "data-[active=true]:bg-[#0071e3]/10 dark:data-[active=true]:bg-[#0a84ff]/15",
+                "data-[active=true]:text-[#0071e3] dark:data-[active=true]:text-[#0a84ff]",
+                "hover:bg-black/[0.04] dark:hover:bg-white/[0.05]"
+              ].join(" ")}
             >
-              <File />
+              <File className="size-3.5 opacity-60 group-data-[active=true]/file:opacity-100" />
               <span className="flex-1 truncate">{file.name}</span>
             </SidebarMenuButton>
           </TooltipTrigger>
-          <TooltipContent side="right">
+          <TooltipContent side="right" className="text-[11px] font-[450]">
             {file.path} · {LANGUAGE_DISPLAY_NAMES[file.language as SupportedLanguage] ?? file.language}
           </TooltipContent>
         </Tooltip>
@@ -132,9 +136,9 @@ function FileItem({ file }: { file: FileModel }) {
             deleteFile(file.id)
           }}
           aria-label={`Delete ${file.name}`}
-          className="hover:text-destructive"
+          className="hover:bg-black/[0.06] dark:hover:bg-white/[0.10] hover:text-hig-danger transition-colors duration-150 rounded-md top-2 right-1.5 h-5 w-5 p-0"
         >
-          <Trash2 className="size-4" />
+          <Trash2 className="size-3" />
         </SidebarMenuAction>
       )}
     </SidebarMenuItem>
@@ -210,24 +214,81 @@ function NewFileDialog({
 
 // ─── Main sidebar export ────────────────────────────────────────────────────
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { files } = useEditor()
+  const { workspace, files, activeFileId, switchFile, createFile } = useEditor()
   const [dialogOpen, setDialogOpen] = React.useState(false)
+
+  // Virtualization state
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null)
+  const [scrollTop, setScrollTop] = React.useState(0)
+  const [expandedFolders, setExpandedFolders] = React.useState<Record<string, boolean>>({
+    "root-1": true // Expand first root by default
+  })
+
+  const ROW_HEIGHT = 32
+  const BUFFER = 5
+
+  // Flatten all roots into a single list
+  const flattenedNodes = React.useMemo(() => {
+    let all: VirtualNode[] = []
+    workspace.roots.forEach(root => {
+      // Root itself as a node
+      all.push({
+        id: root.id,
+        name: root.name,
+        depth: 0,
+        type: "folder",
+        path: `/${root.name}`
+      })
+      if (expandedFolders[root.id]) {
+        all = all.concat(flattenTree(root.files, expandedFolders, 1))
+      }
+    })
+    return all
+  }, [workspace.roots, expandedFolders])
+
+  const totalHeight = flattenedNodes.length * ROW_HEIGHT
+  const containerHeight = 600 // Fallback, will be dynamic or use height from ref
+
+  const visibleStartIndex = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - BUFFER)
+  const visibleEndIndex = Math.min(
+    flattenedNodes.length,
+    Math.ceil((scrollTop + containerHeight) / ROW_HEIGHT) + BUFFER
+  )
+
+  const visibleNodes = flattenedNodes.slice(visibleStartIndex, visibleEndIndex)
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    setScrollTop(e.currentTarget.scrollTop)
+  }
+
+  const toggleFolder = (id: string) => {
+    setExpandedFolders(prev => ({ ...prev, [id]: !prev[id] }))
+  }
+
+  const handleNodeClick = (node: VirtualNode) => {
+    if (node.type === "folder") {
+      toggleFolder(node.id)
+    } else {
+      switchFile(node.id)
+    }
+  }
 
   return (
     <>
       <Sidebar {...props}>
         <SidebarContent>
           {/* Open Files — driven by EditorContext */}
-          <SidebarGroup>
-            <SidebarGroupLabel>Open Files</SidebarGroupLabel>
+          <SidebarGroup className="px-2 shrink-0">
+            <SidebarGroupLabel className="text-[10px] uppercase font-semibold tracking-[0.1em] text-[#86868b] dark:text-[rgba(235,235,240,0.35)] py-2 px-2">Open Files</SidebarGroupLabel>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <SidebarGroupAction
                     onClick={() => setDialogOpen(true)}
                     aria-label="New file"
+                    className="hover:bg-black/[0.06] dark:hover:bg-white/[0.10] rounded-md transition-colors size-5 top-2 right-3"
                   >
-                    <FilePlus />
+                    <FilePlus className="size-3.5" />
                   </SidebarGroupAction>
                 </TooltipTrigger>
                 <TooltipContent side="right">New File</TooltipContent>
@@ -242,26 +303,46 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarGroupContent>
           </SidebarGroup>
 
-          {/* Static file tree (preserved from original editor-sidebar) */}
-          <SidebarGroup>
-            <SidebarGroupLabel>Files</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {[
-                  ["app", ["api", ["hello", ["route.ts"]], "page.tsx", "layout.tsx", ["blog", ["page.tsx"]]]],
-                  ["components", ["ui", "button.tsx", "card.tsx"], "header.tsx", "footer.tsx"],
-                  ["lib", ["util.ts"]],
-                  ["public", "favicon.ico", "vercel.svg"],
-                  ".eslintrc.json",
-                  ".gitignore",
-                  "next.config.js",
-                  "tailwind.config.js",
-                  "package.json",
-                  "README.md",
-                ].map((item, index) => (
-                  <Tree key={index} item={item} />
-                ))}
-              </SidebarMenu>
+          {/* Virtualized Files Explorer */}
+          <SidebarGroup className="px-2 flex-1 min-h-0">
+            <SidebarGroupLabel className="text-[10px] uppercase font-semibold tracking-[0.1em] text-[#86868b] dark:text-[rgba(235,235,240,0.35)] py-2 px-2">Explorer</SidebarGroupLabel>
+            <SidebarGroupContent
+              ref={scrollContainerRef}
+              onScroll={handleScroll}
+              className="relative overflow-y-auto overflow-x-hidden h-full"
+            >
+              <div style={{ height: totalHeight, width: '100%' }}>
+                {visibleNodes.map((node, index) => {
+                  const realIndex = visibleStartIndex + index
+                  const isActive = node.id === activeFileId
+                  return (
+                    <div
+                      key={node.id}
+                      onClick={() => handleNodeClick(node)}
+                      className={[
+                        "absolute left-0 right-0 flex items-center gap-1.5 px-2 cursor-default group transition-all duration-150 ease-out",
+                        "text-[13px] font-[450] hover:bg-black/[0.04] dark:hover:bg-white/[0.05]",
+                        isActive ? "bg-[#0071e3]/10 text-[#0071e3] dark:bg-[#0a84ff]/15 dark:text-[#0a84ff]" : "text-[#1d1d1f] dark:text-[#f5f5f7]"
+                      ].join(" ")}
+                      style={{
+                        top: realIndex * ROW_HEIGHT,
+                        height: ROW_HEIGHT,
+                        paddingLeft: (node.depth * 12) + 8
+                      }}
+                    >
+                      {node.type === "folder" ? (
+                        <>
+                          <ChevronRight className={["size-3.5 transition-transform opacity-50", expandedFolders[node.id] ? "rotate-90" : ""].join(" ")} />
+                          <Folder className="size-3.5 opacity-60" />
+                        </>
+                      ) : (
+                        <File className={["size-3.5 opacity-60 ml-5", isActive ? "opacity-100" : ""].join(" ")} />
+                      )}
+                      <span className="flex-1 truncate">{node.name}</span>
+                    </div>
+                  )
+                })}
+              </div>
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
