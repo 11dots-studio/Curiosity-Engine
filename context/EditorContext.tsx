@@ -30,6 +30,22 @@ export type EditorTheme = "vs-dark" | "light" | "vs" | "hc-black" | string
 
 export { SUPPORTED_LANGUAGES }
 
+const EXTENSION_TO_LANGUAGE: Record<string, SupportedLanguage> = {
+    ts: "typescript",
+    tsx: "typescript",
+    js: "javascript",
+    jsx: "javascript",
+    json: "json",
+    py: "python",
+    html: "html",
+    css: "css",
+}
+
+function detectLanguage(filename: string): SupportedLanguage {
+    const ext = filename.split(".").pop()?.toLowerCase()
+    return (ext && EXTENSION_TO_LANGUAGE[ext]) || "typescript"
+}
+
 const STORAGE_KEY = "editor.workspace.v1"
 const CURRENT_VERSION = 1
 
@@ -76,14 +92,17 @@ const INITIAL_STATE: WorkspaceState = {
     ],
 }
 
+export type ViewMode = "code" | "web" | "chat"
+
 interface EditorContextValue {
     workspace: Workspace
     files: FileModel[] // Flattened open files for tabs
     activeFileId: string | null
     activeFile: FileModel | undefined
     splitViewMode: SplitViewMode
+    viewMode: ViewMode
     editorRef: React.RefObject<MonacoTypes.editor.IStandaloneCodeEditor | null>
-    createFile: (name: string, language: SupportedLanguage, rootId?: string) => void
+    createFile: (name: string, language?: SupportedLanguage, rootId?: string) => void
     updateFileContent: (id: string, content: string) => void
     updateFileLanguage: (id: string, language: SupportedLanguage) => void
     switchFile: (id: string) => void
@@ -94,8 +113,10 @@ interface EditorContextValue {
     wordWrap: boolean
     setWordWrap: (wrap: boolean) => void
     setSplitViewMode: (mode: SplitViewMode) => void
+    setViewMode: (mode: ViewMode) => void
     addRoot: (name: string) => void
     removeRoot: (id: string) => void
+    createMultipleFiles: (files: { name: string, content: string, language?: SupportedLanguage }[]) => void
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null)
@@ -104,6 +125,7 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
     const [workspaceState, setWorkspaceState] = useState<WorkspaceState>(INITIAL_STATE)
     const [isLoaded, setIsLoaded] = useState(false)
     const [splitViewMode, setSplitViewModeState] = useState<SplitViewMode>("single")
+    const [viewMode, setViewModeState] = useState<ViewMode>("code")
     const editorRef = useRef<MonacoTypes.editor.IStandaloneCodeEditor | null>(null)
 
     // Persistence: Load on mount
@@ -172,10 +194,12 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
     }, [])
 
     const createFile = useCallback(
-        (name: string, language: SupportedLanguage, rootId?: string) => {
+        (name: string, language?: SupportedLanguage, rootId?: string) => {
             const id = crypto.randomUUID()
-            const ext = name.includes(".") ? "" : `.${language === "typescript" ? "ts" : language === "javascript" ? "js" : language === "python" ? "py" : language}`
+            const detectedLang = language || detectLanguage(name)
+            const ext = name.includes(".") ? "" : `.${detectedLang === "typescript" ? "ts" : detectedLang === "javascript" ? "js" : detectedLang === "python" ? "py" : detectedLang}`
             const fullName = name.includes(".") ? name : name + ext
+            const finalLang = language || detectLanguage(fullName)
 
             updateWorkspace(prev => {
                 const targetRootId = rootId || prev.roots[0].id
@@ -186,7 +210,7 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
                         files: [...root.files, {
                             id,
                             name: fullName,
-                            language,
+                            language: finalLang,
                             path: `/${fullName}`,
                             content: "",
                         }]
@@ -231,7 +255,13 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
     )
 
     const switchFile = useCallback((id: string) => {
-        updateWorkspace(prev => ({ ...prev, activeFileId: id }))
+        updateWorkspace(prev => ({
+            ...prev,
+            activeFileId: id,
+            openFileIds: prev.openFileIds.includes(id)
+                ? prev.openFileIds
+                : [...prev.openFileIds, id]
+        }))
     }, [updateWorkspace])
 
     const deleteFile = useCallback(
@@ -300,6 +330,42 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
         }))
     }, [updateWorkspace])
 
+    const createMultipleFiles = useCallback((newFiles: { name: string, content: string, language?: SupportedLanguage }[]) => {
+        setWorkspaceState(prev => {
+            const activeWorkspace = prev.workspaces.find(w => w.id === prev.activeWorkspaceId) || prev.workspaces[0]
+            const targetRoot = activeWorkspace.roots[0]
+
+            const createdFiles = newFiles.map(f => {
+                const id = crypto.randomUUID()
+                const detectedLang = f.language || detectLanguage(f.name)
+                return {
+                    id,
+                    name: f.name,
+                    language: detectedLang,
+                    path: `/${f.name}`,
+                    content: f.content,
+                }
+            })
+
+            const newFileIds = createdFiles.map(f => f.id)
+
+            return {
+                ...prev,
+                workspaces: prev.workspaces.map(w =>
+                    w.id === prev.activeWorkspaceId ? {
+                        ...w,
+                        roots: w.roots.map(root => root.id === targetRoot.id ? {
+                            ...root,
+                            files: [...root.files, ...createdFiles]
+                        } : root),
+                        openFileIds: [...w.openFileIds, ...newFileIds],
+                        activeFileId: newFileIds[newFileIds.length - 1]
+                    } : w
+                )
+            }
+        })
+    }, [])
+
     const removeRoot = useCallback((id: string) => {
         updateWorkspace(prev => ({
             ...prev,
@@ -316,6 +382,7 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
                 files,
                 activeFileId: workspace.activeFileId,
                 splitViewMode,
+                viewMode,
                 activeFile,
                 editorRef,
                 createFile,
@@ -325,12 +392,14 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
                 deleteFile,
                 closeFile,
                 setSplitViewMode,
+                setViewMode: setViewModeState,
                 showMinimap: workspace.uiState.minimapEnabled,
                 setShowMinimap,
                 wordWrap: workspace.uiState.wordWrap,
                 setWordWrap,
                 addRoot,
-                removeRoot
+                removeRoot,
+                createMultipleFiles
             }}
         >
             {children}

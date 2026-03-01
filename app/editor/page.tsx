@@ -13,7 +13,9 @@ import {
 import { EditorProvider, useEditor } from "@/context/EditorContext"
 import { EditorToolbar } from "@/components/editor/EditorToolbar"
 import { EditorContainer } from "@/components/editor/EditorContainer"
-import { ChevronLeft } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { ChevronLeft, Code, Terminal, Bot, MessageSquare } from "lucide-react"
 import Link from "next/link"
 import { GlobalSearchBar } from "@/components/global-search-bar"
 import {
@@ -23,6 +25,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { CommandPalette, type Command } from "@/components/editor/CommandPalette"
 
 const EditorAppMenuBar = memo(function EditorAppMenuBar() {
@@ -107,6 +115,38 @@ const EditorAppMenuBar = memo(function EditorAppMenuBar() {
   )
 })
 
+const ViewToggle = memo(function ViewToggle() {
+  const { viewMode, setViewMode } = useEditor()
+
+  const modes = [
+    { id: 'code', label: 'Code', icon: Code },
+    { id: 'chat', label: 'Chat', icon: MessageSquare },
+    { id: 'web', label: 'Web', icon: Bot },
+  ] as const
+
+  return (
+    <div className="flex items-center gap-1">
+      {modes.map((mode) => (
+        <Button
+          key={mode.id}
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "h-7 px-3 text-[11px] font-[500] rounded-lg transition-all gap-1.5",
+            viewMode === mode.id
+              ? "bg-white dark:bg-white/10 shadow-sm text-[#0071e3] dark:text-[#0a84ff] hover:bg-white dark:hover:bg-white/10"
+              : "text-[#86868b] hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
+          )}
+          onClick={() => setViewMode(mode.id)}
+        >
+          <mode.icon className="size-3.5" />
+          {mode.label}
+        </Button>
+      ))}
+    </div>
+  )
+})
+
 const EditorHeader = memo(function EditorHeader() {
   const [title, setTitle] = useState("Curiosity Context")
   const [isEditingTitle, setIsEditingTitle] = useState(false)
@@ -135,50 +175,64 @@ const EditorHeader = memo(function EditorHeader() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-30 flex h-11 w-full shrink-0 items-center justify-between border-b border-black/[0.06] dark:border-white/[0.06] bg-white/95 dark:bg-[#1c1c1e]/95 backdrop-blur-xl px-3" style={{ boxShadow: 'var(--hig-shadow-sm)' }}>
-      <div className="flex items-center gap-3 flex-1 min-w-0">
-        <div className="flex items-center gap-2 mr-2">
-          <Link href="/" className="text-[#6e6e73] hover:text-[#1d1d1f] dark:text-zinc-400 dark:hover:text-zinc-100 transition-all duration-150 ease-out hidden md:flex items-center gap-1 text-[13px] font-[450] px-2 rounded-md hover:bg-black/[0.06] dark:hover:bg-white/[0.07] h-7">
-            <ChevronLeft className="size-4" />
-            Dashboard
-          </Link>
-          <Separator orientation="vertical" className="h-4 bg-black/[0.08] dark:bg-white/[0.08] mx-1 hidden md:block" />
-          <SidebarTrigger className="text-[#6e6e73] hover:text-[#1d1d1f] dark:text-zinc-400 dark:hover:text-zinc-100 transition-all duration-150 ease-out size-6 [&>svg]:size-3.5 hover:bg-black/[0.06] dark:hover:bg-white/[0.07] rounded-md" />
+    <header className="fixed top-0 left-0 right-0 z-30 flex h-11 w-full shrink-0 items-center border-b border-black/[0.06] dark:border-white/[0.06] bg-white/95 dark:bg-[#1c1c1e]/95 backdrop-blur-xl px-3 gap-4" style={{ boxShadow: 'var(--hig-shadow-sm)' }}>
+      {/* Left Section: Dashboard Icon, Sidebar Trigger, and Menu Bar */}
+      <div className="flex items-center gap-1 min-w-0">
+        <div className="flex items-center">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/" className="text-[#6e6e73] hover:text-[#1d1d1f] dark:text-zinc-400 dark:hover:text-zinc-100 transition-all duration-150 ease-out flex items-center justify-center size-8 rounded-md hover:bg-black/[0.06] dark:hover:bg-white/[0.07]">
+                  <ChevronLeft className="size-5" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">Back to Dashboard</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <Separator orientation="vertical" className="h-4 bg-black/[0.08] dark:bg-white/[0.08] mx-1" />
+          <SidebarTrigger className="text-[#6e6e73] hover:text-[#1d1d1f] dark:text-zinc-400 dark:hover:text-zinc-100 transition-all duration-150 ease-out size-8 [&>svg]:size-4 hover:bg-black/[0.06] dark:hover:bg-white/[0.07] rounded-md" />
         </div>
+        <Separator orientation="vertical" className="h-4 bg-black/[0.08] dark:bg-white/[0.08] mx-1" />
+        <div className="flex items-center px-1">
+          <EditorAppMenuBar />
+        </div>
+      </div>
 
-        <div className="flex items-center min-w-0">
+      {/* Center Section: View Toggle */}
+      <div className="flex-1 flex justify-center">
+        <div className="flex items-center bg-black/[0.04] dark:bg-white/[0.04] p-1 rounded-xl border border-black/[0.06] dark:border-white/[0.06]">
+          <ViewToggle />
+        </div>
+      </div>
+
+      {/* Right Section: Toolbar (Split View, Theme) */}
+      <div className="flex items-center justify-end min-w-0 pr-1 gap-4">
+        <div
+          className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.05] dark:border-white/[0.05] hover:border-black/10 dark:hover:border-white/10 transition-all cursor-text group max-w-[200px]"
+          onClick={() => setIsEditingTitle(true)}
+        >
           {isEditingTitle ? (
             <input
               ref={inputRef}
-              type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onBlur={handleTitleSubmit}
               onKeyDown={handleKeyDown}
-              className="h-7 w-[200px] text-[14px] font-[500] text-[#1d1d1f] dark:text-[#f5f5f7] bg-transparent border-none outline-none focus:ring-0 px-1 placeholder:text-[#86868b]"
+              className="bg-transparent border-none outline-none text-[12px] font-[500] text-right w-full min-w-[80px]"
             />
           ) : (
-            <span
-              onClick={() => setIsEditingTitle(true)}
-              className="text-[14px] font-[500] text-[#1d1d1f] dark:text-[#f5f5f7] cursor-text opacity-80 hover:opacity-100 transition-all duration-150 ease-out truncate px-1 max-w-[300px]"
-              title="Click to edit"
-            >
+            <span className="text-[12px] font-[500] truncate">
               {title}
             </span>
           )}
         </div>
-      </div>
-
-      <div className="flex items-center justify-center flex-1 min-w-0 hidden md:flex">
-        <EditorAppMenuBar />
-      </div>
-
-      <div className="flex items-center justify-end gap-2 flex-1 min-w-0 pr-1">
         <EditorToolbar />
       </div>
     </header>
   )
 })
+
+import { ChatPanel } from "@/components/editor/ChatPanel"
 
 function EditorPageContent() {
   const { toggleSidebar } = useSidebar()
@@ -243,8 +297,8 @@ function EditorPageContent() {
       <EditorHeader />
       <div className="flex flex-1 min-h-0 overflow-hidden relative w-full pt-11">
         <AppSidebar className="top-11 h-[calc(100vh-2.75rem)]" />
-        <SidebarInset className="bg-transparent m-0 rounded-none border-none outline-none flex flex-col h-full w-full overflow-hidden p-0 relative">
-          <div className="flex w-full h-full p-0 flex-1 min-h-0">
+        <SidebarInset className="bg-transparent m-0 rounded-none border-none outline-none flex flex-col h-full flex-1 min-w-0 overflow-hidden p-0 relative">
+          <div className="flex w-full h-full p-0 flex-1 min-h-0 overflow-hidden">
             <EditorContainer />
           </div>
         </SidebarInset>
@@ -263,10 +317,6 @@ function EditorPageContent() {
 
 export default function Page() {
   return (
-    <EditorProvider>
-      <SidebarProvider className="flex flex-col h-screen w-full overflow-hidden bg-[#fafafa] dark:bg-[#141414] text-[#1d1d1f] dark:text-[#f5f5f7] selection:bg-[#0071e3]/15 dark:selection:bg-[#0a84ff]/20 p-0 m-0">
-        <EditorPageContent />
-      </SidebarProvider>
-    </EditorProvider>
+    <EditorPageContent />
   )
 }

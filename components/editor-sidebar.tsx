@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { ChevronRight, File, Folder, FilePlus, Trash2 } from "lucide-react"
+import { FileIcon } from "@/components/editor/FileIcon"
 
 import {
   Collapsible,
@@ -15,6 +16,7 @@ import {
   SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuButton,
@@ -22,6 +24,8 @@ import {
   SidebarMenuSub,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ChatPanel } from "@/components/editor/ChatPanel"
 import {
   Dialog,
   DialogContent,
@@ -119,7 +123,10 @@ function FileItem({ file }: { file: FileModel }) {
                 "hover:bg-black/[0.04] dark:hover:bg-white/[0.05]"
               ].join(" ")}
             >
-              <File className="size-3.5 opacity-60 group-data-[active=true]/file:opacity-100" />
+              <FileIcon
+                language={file.language}
+                className="size-3.5 opacity-60 group-data-[active=true]/file:opacity-100"
+              />
               <span className="flex-1 truncate">{file.name}</span>
             </SidebarMenuButton>
           </TooltipTrigger>
@@ -155,13 +162,11 @@ function NewFileDialog({
 }) {
   const { createFile } = useEditor()
   const [name, setName] = React.useState("")
-  const [lang, setLang] = React.useState<SupportedLanguage>("typescript")
 
   const handleCreate = () => {
     if (!name.trim()) return
-    createFile(name.trim(), lang)
+    createFile(name.trim())
     setName("")
-    setLang("typescript")
     onOpenChange(false)
   }
 
@@ -179,28 +184,6 @@ function NewFileDialog({
             onKeyDown={(e) => e.key === "Enter" && handleCreate()}
             autoFocus
           />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="justify-between">
-                {LANGUAGE_DISPLAY_NAMES[lang]}
-                <ChevronRight className="size-3 rotate-90 opacity-60" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              <DropdownMenuLabel className="text-xs">Language</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {SUPPORTED_LANGUAGES.map((l) => (
-                <DropdownMenuItem
-                  key={l}
-                  onSelect={() => setLang(l)}
-                  className="text-xs"
-                >
-                  {LANGUAGE_DISPLAY_NAMES[l]}
-                  {lang === l && <span className="ml-auto text-primary">✓</span>}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
         <DialogFooter showCloseButton>
           <Button size="sm" onClick={handleCreate} disabled={!name.trim()}>
@@ -216,6 +199,7 @@ function NewFileDialog({
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { workspace, files, activeFileId, switchFile, createFile } = useEditor()
   const [dialogOpen, setDialogOpen] = React.useState(false)
+  const [activeTab, setActiveTab] = React.useState("files")
 
   // Virtualization state
   const scrollContainerRef = React.useRef<HTMLDivElement>(null)
@@ -276,75 +260,77 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <>
       <Sidebar {...props}>
-        <SidebarContent>
-          {/* Open Files — driven by EditorContext */}
-          <SidebarGroup className="px-2 shrink-0">
-            <SidebarGroupLabel className="text-[10px] uppercase font-semibold tracking-[0.1em] text-[#86868b] dark:text-[rgba(235,235,240,0.35)] py-2 px-2">Open Files</SidebarGroupLabel>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <SidebarGroupAction
-                    onClick={() => setDialogOpen(true)}
-                    aria-label="New file"
-                    className="hover:bg-black/[0.06] dark:hover:bg-white/[0.10] rounded-md transition-colors size-5 top-2 right-3"
-                  >
-                    <FilePlus className="size-3.5" />
-                  </SidebarGroupAction>
-                </TooltipTrigger>
-                <TooltipContent side="right">New File</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {files.map((file) => (
-                  <FileItem key={file.id} file={file} />
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          {/* Virtualized Files Explorer */}
-          <SidebarGroup className="px-2 flex-1 min-h-0">
-            <SidebarGroupLabel className="text-[10px] uppercase font-semibold tracking-[0.1em] text-[#86868b] dark:text-[rgba(235,235,240,0.35)] py-2 px-2">Explorer</SidebarGroupLabel>
-            <SidebarGroupContent
-              ref={scrollContainerRef}
-              onScroll={handleScroll}
-              className="relative overflow-y-auto overflow-x-hidden h-full"
-            >
-              <div style={{ height: totalHeight, width: '100%' }}>
-                {visibleNodes.map((node, index) => {
-                  const realIndex = visibleStartIndex + index
-                  const isActive = node.id === activeFileId
-                  return (
-                    <div
-                      key={node.id}
-                      onClick={() => handleNodeClick(node)}
-                      className={[
-                        "absolute left-0 right-0 flex items-center gap-1.5 px-2 cursor-default group transition-all duration-150 ease-out",
-                        "text-[13px] font-[450] hover:bg-black/[0.04] dark:hover:bg-white/[0.05]",
-                        isActive ? "bg-[#0071e3]/10 text-[#0071e3] dark:bg-[#0a84ff]/15 dark:text-[#0a84ff]" : "text-[#1d1d1f] dark:text-[#f5f5f7]"
-                      ].join(" ")}
-                      style={{
-                        top: realIndex * ROW_HEIGHT,
-                        height: ROW_HEIGHT,
-                        paddingLeft: (node.depth * 12) + 8
-                      }}
+        <SidebarContent className="flex-1 overflow-hidden h-full">
+          <div className="flex-1 overflow-y-auto m-0 p-0 flex flex-col h-full">
+            {/* Open Files — driven by EditorContext */}
+            <SidebarGroup className="px-2 shrink-0">
+              <SidebarGroupLabel className="text-[10px] uppercase font-semibold tracking-[0.1em] text-[#86868b] dark:text-[rgba(235,235,240,0.35)] py-2 px-2">Open Files</SidebarGroupLabel>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarGroupAction
+                      onClick={() => setDialogOpen(true)}
+                      aria-label="New file"
+                      className="hover:bg-black/[0.06] dark:hover:bg-white/[0.10] rounded-md transition-colors size-5 top-2 right-3"
                     >
-                      {node.type === "folder" ? (
-                        <>
-                          <ChevronRight className={["size-3.5 transition-transform opacity-50", expandedFolders[node.id] ? "rotate-90" : ""].join(" ")} />
-                          <Folder className="size-3.5 opacity-60" />
-                        </>
-                      ) : (
-                        <File className={["size-3.5 opacity-60 ml-5", isActive ? "opacity-100" : ""].join(" ")} />
-                      )}
-                      <span className="flex-1 truncate">{node.name}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </SidebarGroupContent>
-          </SidebarGroup>
+                      <FilePlus className="size-3.5" />
+                    </SidebarGroupAction>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">New File</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {files.map((file) => (
+                    <FileItem key={file.id} file={file} />
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            {/* Virtualized Files Explorer */}
+            <SidebarGroup className="px-2 flex-1 min-h-0">
+              <SidebarGroupLabel className="text-[10px] uppercase font-semibold tracking-[0.1em] text-[#86868b] dark:text-[rgba(235,235,240,0.35)] py-2 px-2">Explorer</SidebarGroupLabel>
+              <SidebarGroupContent
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                className="relative overflow-y-auto overflow-x-hidden h-full"
+              >
+                <div style={{ height: totalHeight, width: '100%' }}>
+                  {visibleNodes.map((node, index) => {
+                    const realIndex = visibleStartIndex + index
+                    const isActive = node.id === activeFileId
+                    return (
+                      <div
+                        key={node.id}
+                        onClick={() => handleNodeClick(node)}
+                        className={[
+                          "absolute left-0 right-0 flex items-center gap-1.5 px-2 cursor-default group transition-all duration-150 ease-out",
+                          "text-[13px] font-[450] hover:bg-black/[0.04] dark:hover:bg-white/[0.05]",
+                          isActive ? "bg-[#0071e3]/10 text-[#0071e3] dark:bg-[#0a84ff]/15 dark:text-[#0a84ff]" : "text-[#1d1d1f] dark:text-[#f5f5f7]"
+                        ].join(" ")}
+                        style={{
+                          top: realIndex * ROW_HEIGHT,
+                          height: ROW_HEIGHT,
+                          paddingLeft: (node.depth * 12) + 8
+                        }}
+                      >
+                        {node.type === "folder" ? (
+                          <>
+                            <ChevronRight className={["size-3.5 transition-transform opacity-50", expandedFolders[node.id] ? "rotate-90" : ""].join(" ")} />
+                            <Folder className="size-3.5 opacity-60" />
+                          </>
+                        ) : (
+                          <FileIcon language={node.language} className={["size-3.5 opacity-60 ml-5", isActive ? "opacity-100" : ""].join(" ")} />
+                        )}
+                        <span className="flex-1 truncate">{node.name}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </div>
         </SidebarContent>
         <SidebarRail />
       </Sidebar>

@@ -9,6 +9,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { X, FileCode } from "lucide-react"
+import { FileIcon } from "@/components/editor/FileIcon"
 
 export const FileTabs = memo(function FileTabs() {
     const { files, activeFileId, switchFile, closeFile } = useEditor()
@@ -49,7 +50,7 @@ export const FileTabs = memo(function FileTabs() {
                                         : "text-[#86868b] dark:text-[rgba(235,235,240,0.45)] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] hover:bg-black/[0.05] dark:hover:bg-white/[0.05]"
                                 ].join(" ")}
                             >
-                                <FileCode className="size-3 shrink-0 opacity-60" />
+                                <FileIcon language={file.language} className="size-3 shrink-0 opacity-60" />
                                 <span className="truncate whitespace-nowrap min-w-0 flex-1 text-left">{getTabLabel(file)}</span>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
