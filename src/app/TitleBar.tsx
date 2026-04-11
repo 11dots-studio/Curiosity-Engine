@@ -15,11 +15,16 @@ export const TitleBar = () => {
     : "(no app selected)";
 
   return (
-    <div className="z-11 w-full h-8 bg-(--sidebar) absolute top-0 left-0 app-region-drag flex items-center">
-      <div className="no-app-region-drag pl-24 text-sm font-medium">
-        {displayText}
+    <div className="z-11 w-full h-8 bg-(--sidebar) absolute top-0 left-0 app-region-drag flex items-center justify-between border-b border-border/40">
+      <div className="flex-1 flex pl-6">
+        <span className="text-[13px] font-semibold tracking-wide opacity-80">Curiosity Engine</span>
       </div>
-      <div className="flex-1 text-center text-sm font-medium">Curiosity Engine</div>
+      <div className="flex-1 flex justify-center no-app-region-drag">
+        <span className="text-[12px] font-medium text-muted-foreground bg-secondary/60 px-3 py-0.5 rounded-full border border-border/50">
+          {displayText}
+        </span>
+      </div>
+      <div className="flex-1 pr-24"></div>
     </div>
   );
 };

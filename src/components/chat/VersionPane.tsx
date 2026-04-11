@@ -37,32 +37,36 @@ export function VersionPane({ isVisible, onClose }: VersionPaneProps) {
   }
 
   return (
-    <div className="h-full border-t border-2 border-border w-full">
-      <div className="p-2 border-b border-border flex items-center justify-between">
-        <h2 className="text-base font-semibold pl-2">Version History</h2>
+    <div className="h-full border-l border-border bg-background/50 backdrop-blur-sm w-full animate-in slide-in-from-right duration-300">
+      <div className="p-4 border-b border-border/60 flex items-center justify-between bg-card/50">
+        <h2 className="text-[15px] font-semibold text-foreground tracking-tight pl-1">Version History</h2>
         <button
           onClick={onClose}
-          className="p-1 hover:bg-(--background-lightest) rounded-md  "
+          className="p-1.5 hover:bg-secondary text-muted-foreground hover:text-foreground rounded-lg transition-all"
           aria-label="Close version pane"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
       </div>
-      <div className="overflow-y-auto h-[calc(100%-60px)]">
+      <div className="overflow-y-auto h-[calc(100%-60px)] custom-scrollbar">
         {loading ? (
-          <div className="p-4 ">Loading versions...</div>
+          <div className="p-8 text-center text-sm text-muted-foreground flex flex-col items-center gap-2">
+            <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+            <span>Loading history...</span>
+          </div>
         ) : versions.length === 0 ? (
-          <div className="p-4 ">No versions available</div>
+          <div className="p-8 text-center text-sm text-muted-foreground">No versions available</div>
         ) : (
-          <div className="divide-y divide-border">
+          <div className="flex flex-col">
             {versions.map((version: Version, index) => (
               <div
                 key={version.oid}
-                className={`px-4 py-2 hover:bg-(--background-lightest) cursor-pointer ${
+                className={cn(
+                  "px-5 py-4 cursor-pointer transition-all border-b border-border/40 group",
                   selectedVersionId === version.oid
-                    ? "bg-(--background-lightest)"
-                    : ""
-                }`}
+                    ? "bg-secondary/80 border-l-4 border-l-primary shadow-inner"
+                    : "hover:bg-secondary/40 border-l-4 border-l-transparent"
+                )}
                 onClick={() => {
                   IpcClient.getInstance().checkoutVersion({
                     appId: appId!,
@@ -71,20 +75,20 @@ export function VersionPane({ isVisible, onClose }: VersionPaneProps) {
                   setSelectedVersionId(version.oid);
                 }}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-xs">
-                    Version {versions.length - index}
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="font-semibold text-[13px] text-foreground/90 uppercase tracking-widest">
+                    v{versions.length - index}
                   </span>
-                  <span className="text-xs opacity-90">
+                  <span className="text-[11px] font-medium text-muted-foreground bg-secondary px-2 py-0.5 rounded-md border border-border/50">
                     {formatDistanceToNow(new Date(version.timestamp * 1000), {
                       addSuffix: true,
                     })}
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-start justify-between gap-3">
                   {version.message && (
-                    <p className="mt-1 text-sm">
-                      {version.message.startsWith(
+                    <p className="text-sm text-muted-foreground leading-relaxed flex-1 italic line-clamp-2">
+                      "{version.message.startsWith(
                         "Reverted all changes back to version "
                       )
                         ? version.message.replace(
@@ -94,13 +98,11 @@ export function VersionPane({ isVisible, onClose }: VersionPaneProps) {
                                 (v) => v.oid === hash
                               );
                               return targetIndex !== -1
-                                ? `Reverted all changes back to version ${
-                                    versions.length - targetIndex
-                                  }`
+                               ? `Reverted to v${versions.length - targetIndex}`
                                 : version.message;
                             }
                           )
-                        : version.message}
+                        : version.message}"
                     </p>
                   )}
 
@@ -115,12 +117,13 @@ export function VersionPane({ isVisible, onClose }: VersionPaneProps) {
                       refreshVersions();
                     }}
                     className={cn(
-                      "invisible mt-1 flex items-center gap-1 px-2 py-0.5 text-sm font-medium bg-(--primary) text-(--primary-foreground) hover:bg-background-lightest rounded-md transition-colors",
-                      selectedVersionId === version.oid && "visible"
+                      "opacity-0 scale-90 flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-primary text-primary-foreground hover:shadow-soft rounded-lg transition-all",
+                      selectedVersionId === version.oid && "opacity-100 scale-100",
+                      "group-hover:opacity-100 group-hover:scale-100"
                     )}
-                    aria-label="Undo to latest version"
+                    aria-label="Undo to this version"
                   >
-                    <RotateCcw size={12} />
+                    <RotateCcw size={13} strokeWidth={2.5} />
                     <span>Undo</span>
                   </button>
                 </div>

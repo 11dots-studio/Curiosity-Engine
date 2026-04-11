@@ -31,7 +31,7 @@ export function ProviderSettingsGrid({
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">AI Providers</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-foreground tracking-tight">AI Providers</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {Object.entries(PROVIDERS).map(([key, provider]) => {
           const isConfigured = configuredProviders.includes(
@@ -41,26 +41,26 @@ export function ProviderSettingsGrid({
           return (
             <Card
               key={key}
-              className="cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border-border/60 bg-card/50 backdrop-blur-sm"
+              className="cursor-pointer transition-all duration-300 hover:shadow-hover hover:-translate-y-1 border-border/80 bg-card rounded-[24px] overflow-hidden"
               onClick={() => handleProviderClick(key as ModelProvider)}
             >
               <CardHeader className="p-4">
                 <CardTitle className="text-xl flex items-center justify-between">
                   {provider.displayName}
                   {isProviderSetup(key) ? (
-                    <span className="ml-3 text-[13px] font-medium text-green-600 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full">
+                    <span className="ml-3 text-[12px] font-semibold text-foreground bg-secondary px-3 py-1 rounded-full border border-border/50 shadow-sm uppercase tracking-wide">
                       Ready
                     </span>
                   ) : (
-                    <span className="text-[13px] font-medium text-muted-foreground bg-muted/50 border border-border/50 px-2.5 py-1 rounded-full">
-                      Needs Setup
+                    <span className="text-[12px] font-semibold text-muted-foreground bg-muted/30 border border-border/50 px-3 py-1 rounded-full uppercase tracking-wide">
+                      Setup
                     </span>
                   )}
                 </CardTitle>
                 <CardDescription>
                   {provider.hasFreeTier && (
-                    <span className="text-blue-600 mt-2 dark:text-blue-400 text-sm font-medium bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-full inline-flex items-center">
-                      <GiftIcon className="w-4 h-4 mr-1" />
+                    <span className="text-muted-foreground mt-2 text-xs font-medium bg-secondary/80 px-2.5 py-1 rounded-lg inline-flex items-center border border-border/40">
+                      <GiftIcon className="w-3.5 h-3.5 mr-1.5 opacity-70" />
                       Free tier available
                     </span>
                   )}

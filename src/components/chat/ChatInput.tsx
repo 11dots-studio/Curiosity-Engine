@@ -1,4 +1,4 @@
-import { SendIcon, StopCircleIcon, X, Plus, Settings2, Mic } from "lucide-react";
+import { SendIcon, StopCircleIcon, X, Plus, Settings2 } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { ModelPicker } from "@/components/ModelPicker";
@@ -94,7 +94,7 @@ export function ChatInput({ chatId, onSubmit, variant = "workspace" }: ChatInput
             <div className="pr-8 text-sm text-red-700">{error}</div>
           </div>
         )}
-        <div className="flex flex-col bg-card border border-border/60 hover:border-border rounded-full shadow-elevated focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-300">
+        <div className="flex flex-col bg-card border border-border/80 rounded-[28px] shadow-soft hover:shadow-hover focus-within:!border-primary/50 focus-within:!ring-4 focus-within:!ring-primary/10 transition-all duration-300">
           <div className="flex items-end px-3 py-2 min-h-[64px]">
             <div className="flex items-center gap-1.5 pb-1.5 mr-2">
               <button
@@ -105,14 +105,6 @@ export function ChatInput({ chatId, onSubmit, variant = "workspace" }: ChatInput
               >
                 <Plus size={22} className="opacity-90" />
               </button>
-              <div className="hidden sm:block">
-                <ModelPicker
-                  selectedModel={settings.selectedModel}
-                  onModelSelect={(model) =>
-                    updateSettings({ selectedModel: model })
-                  }
-                />
-              </div>
             </div>
 
             <textarea
@@ -121,12 +113,20 @@ export function ChatInput({ chatId, onSubmit, variant = "workspace" }: ChatInput
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask Curiosity Engine to build..."
-              className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none focus:outline-none resize-none pt-3.5 pb-3 text-[17px] leading-relaxed max-h-[200px]"
+              className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none focus:outline-none resize-none pt-3.5 pb-3 text-[17px] leading-relaxed max-h-[200px] custom-scrollbar"
               rows={1}
               disabled={isStreaming}
             />
 
-            <div className="flex items-center gap-2 pb-1 ml-2">
+            <div className="flex items-center gap-2 pb-1.5 ml-2">
+              <div className="hidden sm:flex items-center mr-1">
+                <ModelPicker
+                  selectedModel={settings.selectedModel}
+                  onModelSelect={(model) =>
+                    updateSettings({ selectedModel: model })
+                  }
+                />
+              </div>
               {isStreaming ? (
                 <button
                   onClick={handleCancel}
@@ -135,21 +135,13 @@ export function ChatInput({ chatId, onSubmit, variant = "workspace" }: ChatInput
                 >
                   <StopCircleIcon size={20} />
                 </button>
-              ) : inputValue.trim() ? (
-                <button
-                  onClick={submitHandler}
-                  className="p-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm"
-                >
-                  <SendIcon size={20} />
-                </button>
               ) : (
                 <button
-                  type="button"
-                  onClick={() => showInfo("Voice input coming soon")}
-                  className="p-2.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
-                  title="Voice input"
+                  onClick={submitHandler}
+                  disabled={!inputValue.trim()}
+                  className="p-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
                 >
-                  <Mic size={22} className="opacity-90" />
+                  <SendIcon size={20} />
                 </button>
               )}
             </div>

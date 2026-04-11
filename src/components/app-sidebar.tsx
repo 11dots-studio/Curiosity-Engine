@@ -1,4 +1,4 @@
-import { Home, Inbox, Settings } from "lucide-react";
+import { Home, Inbox, Settings, Github } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useSidebar } from "@/components/ui/sidebar"; // import useSidebar hook
 import { useEffect, useState, useRef } from "react";
@@ -29,11 +29,6 @@ const items = [
     title: "Chat",
     to: "/chat",
     icon: Inbox,
-  },
-  {
-    title: "Settings",
-    to: "/settings",
-    icon: Settings,
   },
 ];
 
@@ -95,18 +90,38 @@ export function AppSidebar() {
       }}
     >
       <SidebarContent className="overflow-hidden">
-        <div className="flex mt-8">
+        <div className="flex mt-8 h-[calc(100vh-4rem)]">
           {/* Left Column: Menu items */}
-          <div className="">
-            <SidebarTrigger
-              onMouseEnter={() => {
-                setHoverState("clear-hover");
-              }}
-            />
-            <AppIcons onHoverChange={setHoverState} />
+          <div className="flex flex-col h-full pb-4 shrink-0">
+            <div>
+              <SidebarTrigger
+                onMouseEnter={() => {
+                  setHoverState("clear-hover");
+                }}
+              />
+              <AppIcons onHoverChange={setHoverState} />
+            </div>
+            <div className="flex flex-col items-center w-full px-2 gap-2 mt-auto">
+              <a
+                href="https://github.com/11dots-studio/CE.git"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-[44px] h-[44px] rounded-xl transition-colors duration-200 hover:bg-sidebar-accent/40 text-muted-foreground hover:text-foreground active:scale-95"
+                title="GitHub Repository"
+              >
+                <Github className="h-[22px] w-[22px] opacity-90" />
+              </a>
+              <Link
+                to="/settings"
+                className="flex items-center justify-center w-[44px] h-[44px] rounded-xl transition-colors duration-200 hover:bg-sidebar-accent/40 text-muted-foreground hover:text-foreground active:scale-95"
+                title="Settings"
+              >
+                <Settings className="h-[22px] w-[22px] opacity-90" />
+              </Link>
+            </div>
           </div>
           {/* Right Column: Chat List Section */}
-          <div className="w-[240px]">
+          <div className="w-[240px] h-full overflow-y-auto">
             <AppList show={selectedItem === "Apps"} />
             <ChatList show={selectedItem === "Chat"} />
           </div>

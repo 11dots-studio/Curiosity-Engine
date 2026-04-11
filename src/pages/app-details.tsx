@@ -140,9 +140,7 @@ export default function AppDetailsPage() {
       <div className="relative min-h-screen p-8">
         <Button
           onClick={() => navigate({ to: "/", search: {} })}
-          variant="outline"
-          size="sm"
-          className="absolute top-4 left-4 flex items-center gap-2 bg-(--background-lightest) py-5"
+          className="absolute top-4 left-4 flex items-center gap-2 bg-secondary/50 hover:bg-secondary text-secondary-foreground py-5 border-border/50 shadow-sm"
         >
           <ArrowLeft className="h-4 w-4" />
           Go Back
@@ -158,15 +156,13 @@ export default function AppDetailsPage() {
     <div className="relative min-h-screen p-8 w-full">
       <Button
         onClick={() => navigate({ to: "/", search: {} })}
-        variant="outline"
-        size="sm"
-        className="absolute top-4 left-4 flex items-center gap-2 bg-(--background-lightest) py-5"
+        className="absolute top-4 left-4 flex items-center gap-2 bg-secondary/50 hover:bg-secondary text-secondary-foreground py-5 border-border/50 shadow-sm"
       >
         <ArrowLeft className="h-4 w-4" />
         Go Back
       </Button>
 
-      <div className="w-full max-w-2xl mx-auto mt-16 p-8 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-md relative">
+      <div className="w-full max-w-2xl mx-auto mt-16 p-8 bg-card rounded-[28px] border border-border/80 shadow-soft relative">
         <div className="flex items-center mb-6">
           <h2 className="text-3xl font-bold">{selectedApp.name}</h2>
           <Button
@@ -205,19 +201,19 @@ export default function AppDetailsPage() {
 
         <div className="grid grid-cols-2 gap-6 text-base mb-8">
           <div>
-            <span className="block text-gray-500 dark:text-gray-400 mb-1 text-base">
+            <span className="block text-muted-foreground/80 mb-1 text-sm font-medium uppercase tracking-wider">
               Created
             </span>
             <span>{new Date().toLocaleString()}</span>
           </div>
           <div>
-            <span className="block text-gray-500 dark:text-gray-400 mb-1 text-base">
+            <span className="block text-muted-foreground/80 mb-1 text-sm font-medium uppercase tracking-wider">
               Last Updated
             </span>
             <span>{new Date().toLocaleString()}</span>
           </div>
           <div className="col-span-2">
-            <span className="block text-gray-500 dark:text-gray-400 mb-1 text-base">
+            <span className="block text-muted-foreground/80 mb-1 text-sm font-medium uppercase tracking-wider">
               Path
             </span>
             <span>
@@ -361,7 +357,7 @@ export default function AppDetailsPage() {
                 </div>
                 <div className="text-left">
                   <p className="font-medium">Rename app and folder</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground/80">
                     Renames the folder to match the new app name.
                   </p>
                 </div>
@@ -375,7 +371,7 @@ export default function AppDetailsPage() {
               >
                 <div className="text-left">
                   <p className="font-medium">Rename app only</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground/80">
                     The folder name will remain the same.
                   </p>
                 </div>

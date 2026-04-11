@@ -12,6 +12,43 @@ import { isPreviewOpenAtom } from "@/atoms/viewAtoms";
 import { useState, useEffect } from "react";
 import { useStreamChat } from "@/hooks/useStreamChat";
 
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) {
+    const greetings = [
+      "Good morning, Aatharva.",
+      "Ready to build something great today?",
+      "Good morning! Let's write some code.",
+      "Morning! Let's shape your ideas."
+    ];
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  } else if (hour < 18) {
+    const greetings = [
+      "Good afternoon, Aatharva.",
+      "What are we building next?",
+      "Good afternoon! Let's ship something awesome.",
+      "Afternoon! Time to focus and build."
+    ];
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  } else if (hour < 22) {
+    const greetings = [
+      "Good evening, Aatharva.",
+      "Let's ship something awesome tonight.",
+      "Good evening. Ready for a coding session?",
+      "Hope you had a great day. Let's code."
+    ];
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  } else {
+    const greetings = [
+      "Working late tonight?",
+      "Late night coding session?",
+      "The best code is written at night.",
+      "Still awake? Let's build something cool."
+    ];
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  }
+};
+
 export default function HomePage() {
   const [inputValue, setInputValue] = useAtom(chatInputValueAtom);
   const navigate = useNavigate();
@@ -23,6 +60,11 @@ export default function HomePage() {
   const setIsPreviewOpen = useSetAtom(isPreviewOpenAtom);
   const [isLoading, setIsLoading] = useState(false);
   const { streamMessage } = useStreamChat();
+  const [greeting, setGreeting] = useState("");
+
+  useEffect(() => {
+    setGreeting(getGreeting());
+  }, []);
 
   // Get the appId from search params
   const appId = search.appId ? Number(search.appId) : null;
@@ -83,22 +125,24 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[85vh] max-w-4xl mx-auto px-6 py-12 animate-in fade-in duration-700 zoom-in-95">
-      <div className="w-full text-center mb-10 space-y-3">
-        <h2 className="text-[18px] text-muted-foreground opacity-80 font-medium tracking-wide">
-          Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}
+    <div className="flex flex-col items-center justify-center min-h-[85vh] max-w-[800px] mx-auto px-6 py-12 animate-in fade-in duration-700 zoom-in-95">
+      <div className="w-full flex flex-col items-center mb-10 space-y-2">
+        <h2 className="text-[16px] text-muted-foreground font-medium tracking-wide">
+          {greeting || "Hello, Aatharva."}
         </h2>
-        <h1 className="text-[44px] font-semibold tracking-[-0.5px] text-foreground leading-tight">
-          Where should we start?
+        <h1 className="text-[40px] sm:text-[46px] font-semibold tracking-tight text-foreground leading-tight text-center drop-shadow-sm">
+          What do you want to build?
         </h1>
       </div>
 
-      {!isAnyProviderSetup() && <div className="mb-6 w-full max-w-3xl mx-auto"><SetupBanner /></div>}
+      {!isAnyProviderSetup() && <div className="mb-8 w-full"><SetupBanner /></div>}
 
-      <div className="w-full">
-        <ChatInput onSubmit={handleSubmit} variant="landing" />
+      <div className="w-full flex flex-col items-center">
+        <div className="w-full">
+          <ChatInput onSubmit={handleSubmit} variant="landing" />
+        </div>
 
-        <div className="flex flex-wrap justify-center gap-2.5 mt-8 max-w-2xl mx-auto">
+        <div className="flex flex-wrap justify-center gap-4 mt-12 w-full max-w-[640px]">
           {[
             "Build a to-do app",
             "Design a landing page",
@@ -110,9 +154,9 @@ export default function HomePage() {
               type="button"
               key={index}
               onClick={() => setInputValue(label)}
-              className="px-[18px] py-[10px] rounded-full text-[14px] font-medium transition-all duration-200 
-                         bg-secondary/40 text-secondary-foreground border border-black/5 dark:border-white/5
-                         hover:bg-secondary/80 hover:shadow-sm active:scale-95"
+              className="px-[18px] py-[10px] rounded-full text-[13px] font-medium transition-all duration-200 
+                         bg-secondary/40 text-secondary-foreground/90 border border-border/80
+                         hover:bg-secondary/90 hover:border-border hover:shadow-soft hover:-translate-y-[2px] active:scale-[0.98] cursor-pointer"
             >
               {label}
             </button>

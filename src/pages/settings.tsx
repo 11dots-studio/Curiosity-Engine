@@ -34,34 +34,34 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">
+        <h1 className="text-3xl font-bold mb-8 text-foreground tracking-tight">
           Settings
         </h1>
 
         <div className="space-y-6">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+          <div className="bg-card rounded-[24px] shadow-soft p-6 border border-border/80">
+            <h2 className="text-lg font-semibold text-foreground mb-4">
               Appearance
             </h2>
 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-sm font-medium text-muted-foreground/80 tracking-wide uppercase">
                   Theme
                 </label>
 
-                <div className="relative bg-gray-100 dark:bg-gray-700 rounded-lg p-1 flex">
+                <div className="relative bg-secondary/60 rounded-xl p-1.5 flex border border-border/40">
                   {(["system", "light", "dark"] as const).map((option) => (
                     <button
                       key={option}
                       onClick={() => setTheme(option)}
                       className={`
-                        px-4 py-1.5 text-sm font-medium rounded-md
+                        px-4 py-1.5 text-sm font-medium rounded-lg
                         transition-all duration-200
                         ${
                           theme === option
-                            ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
-                            : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                            ? "bg-background text-foreground shadow-sm border border-border/40"
+                            : "text-muted-foreground hover:text-foreground hover:bg-secondary/80"
                         }
                       `}
                     >
@@ -73,23 +73,24 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+          <div className="bg-card rounded-[24px] shadow-soft border border-border/80">
             <ProviderSettingsGrid configuredProviders={[]} />
           </div>
 
           {/* Danger Zone */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-red-200 dark:border-red-800">
-            <h2 className="text-lg font-medium text-red-600 dark:text-red-400 mb-4">
+          <div className="bg-card rounded-[24px] shadow-soft p-6 border-2 border-destructive/20 relative overflow-hidden">
+            <div className="absolute inset-0 bg-destructive/5 pointer-events-none"></div>
+            <h2 className="text-lg font-semibold text-destructive mb-4 relative z-10">
               Danger Zone
             </h2>
 
             <div className="space-y-4">
               <div className="flex items-start justify-between flex-col sm:flex-row sm:items-center gap-4">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                <div className="relative z-10">
+                  <h3 className="text-sm font-medium text-foreground">
                     Reset Everything
                   </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-sm text-muted-foreground/80 mt-1">
                     This will delete all your apps, chats, and settings. This
                     action cannot be undone.
                   </p>

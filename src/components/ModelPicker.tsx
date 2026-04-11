@@ -42,15 +42,15 @@ export function ModelPicker({
         <Button
           variant="outline"
           size="sm"
-          className="flex items-center gap-2 h-8 rounded-full px-3 text-[13px] bg-background/50 hover:bg-accent/50 transition-colors border-border/80 shadow-sm"
+          className="flex items-center gap-2 h-9 rounded-xl px-4 text-[13px] bg-secondary/40 hover:bg-secondary/80 transition-all duration-300 border-border/80 shadow-sm font-medium"
         >
           <span>
-            <span className="text-xs text-muted-foreground">Model:</span>{" "}
+            <span className="text-xs text-muted-foreground font-normal">Model:</span>{" "}
             {modelDisplayName}
           </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-1.5 rounded-xl shadow-lg border-border/60" align="start">
+      <PopoverContent className="w-72 p-1.5 rounded-[20px] shadow-elevated border-border/60 bg-card/95 backdrop-blur-md" align="start">
         <div className="grid gap-2">
           {allModels.map((model) => (
             <Tooltip key={model.name}>
@@ -76,7 +76,7 @@ export function ModelPicker({
                       </span>
                     </span>
                     {model.tag && (
-                      <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
+                      <span className="text-[10px] bg-foreground/5 text-foreground/80 px-2 py-0.5 rounded-md font-semibold uppercase tracking-wider border border-border/40">
                         {model.tag}
                       </span>
                     )}

@@ -58,7 +58,7 @@ export function ChatHeader({
         <Button
           onClick={handleNewChat}
           variant="ghost"
-          className="hidden @2xs:flex items-center justify-start gap-2 mx-2 py-3"
+          className="hidden @2xs:flex items-center justify-start gap-2 mx-2 py-3 text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-[12px] transition-all"
         >
           <PlusCircle size={16} />
           <span>New Chat</span>
@@ -66,7 +66,7 @@ export function ChatHeader({
         <Button
           onClick={onVersionClick}
           variant="ghost"
-          className="hidden @6xs:flex cursor-pointer items-center gap-1 text-sm px-2 py-1 rounded-md"
+          className="hidden @6xs:flex cursor-pointer items-center gap-1 text-sm px-2.5 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all font-medium"
         >
           <History size={16} />
           {loading ? "..." : `Version ${versions.length}`}
@@ -75,7 +75,7 @@ export function ChatHeader({
 
       <button
         onClick={onTogglePreview}
-        className="cursor-pointer p-2 hover:bg-(--background-lightest) rounded-md"
+        className="cursor-pointer p-2 text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-lg transition-all"
       >
         {isPreviewOpen ? (
           <PanelRightClose size={20} />

@@ -12,18 +12,18 @@ export function ChatError({ error, onDismiss }: ChatErrorProps) {
   }
 
   return (
-    <div className="relative flex items-start text-red-600 bg-red-100 border border-red-500 rounded-md text-sm p-3 mx-4 mb-2 shadow-sm">
+    <div className="relative flex items-center gap-3 text-destructive bg-destructive/10 border border-destructive/20 rounded-xl text-sm px-4 py-3 mx-4 mb-4 shadow-soft animate-in slide-in-from-bottom-2 duration-300">
       <AlertTriangle
-        className="h-5 w-5 mr-2 flex-shrink-0"
+        className="h-5 w-5 flex-shrink-0 opacity-80"
         aria-hidden="true"
       />
-      <span className="flex-1">{error}</span>
+      <span className="flex-1 font-medium leading-tight">{error}</span>
       <button
         onClick={onDismiss}
-        className="absolute top-1 right-1 p-1 rounded-full hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
+        className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive/60 hover:text-destructive transition-colors focus:outline-none"
         aria-label="Dismiss error"
       >
-        <XCircle className="h-4 w-4 text-red-500 hover:text-red-700" />
+        <XCircle className="h-4.5 w-4.5" />
       </button>
     </div>
   );

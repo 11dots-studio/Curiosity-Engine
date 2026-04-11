@@ -30,11 +30,11 @@ export const MessagesList = forwardRef<HTMLDivElement, MessagesListProps>(
         ) : (
           <div className="flex flex-col items-center justify-center h-full max-w-2xl mx-auto opacity-80 mt-12 mb-16">
             <div className="flex flex-col items-center justify-center mb-8">
-              <div className="w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center mb-6 border border-primary/10 shadow-sm transition-all hover:scale-105 duration-300">
+              <div className="w-16 h-16 bg-secondary/50 rounded-2xl flex items-center justify-center mb-6 border border-border/50 shadow-soft transition-all hover:scale-[1.02] duration-300">
                 <span className="text-3xl opacity-80">✨</span>
               </div>
-              <h3 className="text-2xl font-semibold tracking-tight text-foreground mb-2">How can I help you today?</h3>
-              <p className="text-sm text-muted-foreground">Select an option below or type a message to begin.</p>
+              <h3 className="text-[26px] font-semibold tracking-tight text-foreground mb-2">How can I help you today?</h3>
+              <p className="text-[15px] text-muted-foreground/80">Select an option below or type a message to begin.</p>
             </div>
             {!isAnyProviderSetup() && <SetupBanner />}
           </div>
@@ -44,7 +44,7 @@ export const MessagesList = forwardRef<HTMLDivElement, MessagesListProps>(
             <Button
               variant="outline"
               size="sm"
-              className="rounded-full shadow-sm hover:shadow-md transition-all px-4"
+              className="rounded-full shadow-soft hover:shadow-hover border-border/80 transition-all duration-300 px-5 bg-card text-muted-foreground hover:text-foreground"
               onClick={() => {
                 if (!selectedChatId) {
                   console.error("No chat selected");

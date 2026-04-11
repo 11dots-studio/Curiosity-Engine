@@ -14,25 +14,27 @@ export function SetupBanner() {
 
   return (
     <div
-      className="w-full mb-8 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-xl shadow-sm cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+      className="w-full mb-8 p-6 bg-secondary/50 backdrop-blur-md border border-border/80 rounded-[24px] shadow-soft cursor-pointer hover:bg-secondary/80 hover:shadow-hover hover:-translate-y-1 transition-all duration-300"
       onClick={handleSetupClick}
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="bg-blue-100 dark:bg-blue-800 p-2 rounded-full">
-            <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+          <div className="bg-background/80 p-3 rounded-2xl shadow-sm border border-border/50">
+            <Sparkles className="w-5 h-5 text-foreground/80" />
           </div>
           <div>
-            <h3 className="font-medium text-blue-800 dark:text-blue-300">
+            <h3 className="text-[17px] font-semibold text-foreground tracking-tight">
               Setup your AI API access
             </h3>
-            <p className="text-sm text-blue-600 dark:text-blue-400 flex items-center gap-1">
-              <GiftIcon className="w-3.5 h-3.5" />
+            <p className="text-sm text-muted-foreground/90 mt-0.5 flex items-center gap-1.5 font-medium">
+              <GiftIcon className="w-4 h-4 opacity-70" />
               Use Google Gemini for free
             </p>
           </div>
         </div>
-        <ChevronRight className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+        <div className="bg-foreground/5 p-2 rounded-full">
+          <ChevronRight className="w-5 h-5 text-muted-foreground" />
+        </div>
       </div>
     </div>
   );
