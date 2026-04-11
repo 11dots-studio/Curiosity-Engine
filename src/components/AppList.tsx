@@ -69,9 +69,9 @@ export function AppList({ show }: { show?: boolean }) {
                   <Button
                     variant="ghost"
                     onClick={() => handleAppClick(app.id)}
-                    className={`justify-start w-full text-left py-3 hover:bg-sidebar-accent/80 ${
+                    className={`justify-start w-full text-left py-2.5 px-3 rounded-lg hover:bg-sidebar-accent/60 transition-colors duration-200 ${
                       selectedAppId === app.id
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                        ? "bg-sidebar-accent/90 text-sidebar-accent-foreground shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
                         : ""
                     }`}
                   >

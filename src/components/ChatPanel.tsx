@@ -135,7 +135,7 @@ export function ChatPanel({
   }, [messages, isUserScrolling]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-background transition-colors duration-300">
       <ChatHeader
         isPreviewOpen={isPreviewOpen}
         onTogglePreview={onTogglePreview}

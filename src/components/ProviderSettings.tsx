@@ -41,18 +41,18 @@ export function ProviderSettingsGrid({
           return (
             <Card
               key={key}
-              className="cursor-pointer transition-all hover:shadow-md border-border"
+              className="cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border-border/60 bg-card/50 backdrop-blur-sm"
               onClick={() => handleProviderClick(key as ModelProvider)}
             >
               <CardHeader className="p-4">
                 <CardTitle className="text-xl flex items-center justify-between">
                   {provider.displayName}
                   {isProviderSetup(key) ? (
-                    <span className="ml-3 text-sm font-medium text-green-500 bg-green-50 dark:bg-green-900/30 border border-green-500/50 dark:border-green-500/50 px-2 py-1 rounded-full">
+                    <span className="ml-3 text-[13px] font-medium text-green-600 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full">
                       Ready
                     </span>
                   ) : (
-                    <span className="text-sm text-gray-500 bg-gray-50 dark:bg-gray-900 dark:text-gray-300  px-2 py-1 rounded-full">
+                    <span className="text-[13px] font-medium text-muted-foreground bg-muted/50 border border-border/50 px-2.5 py-1 rounded-full">
                       Needs Setup
                     </span>
                   )}

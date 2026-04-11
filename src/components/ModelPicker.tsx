@@ -42,7 +42,7 @@ export function ModelPicker({
         <Button
           variant="outline"
           size="sm"
-          className="flex items-center gap-2 h-8"
+          className="flex items-center gap-2 h-8 rounded-full px-3 text-[13px] bg-background/50 hover:bg-accent/50 transition-colors border-border/80 shadow-sm"
         >
           <span>
             <span className="text-xs text-muted-foreground">Model:</span>{" "}
@@ -50,7 +50,7 @@ export function ModelPicker({
           </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-56 p-1" align="start">
+      <PopoverContent className="w-64 p-1.5 rounded-xl shadow-lg border-border/60" align="start">
         <div className="grid gap-2">
           {allModels.map((model) => (
             <Tooltip key={model.name}>

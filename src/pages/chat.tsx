@@ -48,7 +48,7 @@ export default function ChatPage() {
       <>
         <PanelResizeHandle
           onDragging={(e) => setIsResizing(e)}
-          className="w-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors cursor-col-resize"
+          className="w-[2px] bg-border/50 hover:bg-primary/50 transition-colors cursor-col-resize"
         />
         <Panel
           collapsible
@@ -56,6 +56,7 @@ export default function ChatPage() {
           id="preview-panel"
           minSize={20}
           className={cn(
+            "bg-card border-l border-border/40 shadow-sm",
             !isResizing && "transition-all duration-100 ease-in-out"
           )}
         >

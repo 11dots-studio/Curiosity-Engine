@@ -228,7 +228,7 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
           >
             <AccordionItem
               value="settings-key"
-              className="border rounded-lg px-4 bg-(--background-lightest)"
+              className="border border-border/60 rounded-xl px-5 bg-card/40 backdrop-blur-sm shadow-sm transition-all pb-1"
             >
               <AccordionTrigger className="text-lg font-medium hover:no-underline cursor-pointer">
                 API Key from Settings
@@ -276,8 +276,8 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
                       value={apiKeyInput}
                       onChange={(e) => setApiKeyInput(e.target.value)}
                       placeholder={`Enter new ${providerDisplayName} API Key here`}
-                      className={`flex-grow ${
-                        saveError ? "border-red-500" : ""
+                      className={`flex-grow h-10 shadow-sm focus-visible:ring-2 focus-visible:ring-primary/50 transition-shadow ${
+                        saveError ? "border-red-500 focus-visible:ring-red-500" : ""
                       }`}
                     />
                     <Button
@@ -300,7 +300,7 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
 
             <AccordionItem
               value="env-key"
-              className="border rounded-lg px-4 bg-(--background-lightest)"
+              className="border border-border/60 rounded-xl px-5 bg-card/40 backdrop-blur-sm shadow-sm transition-all pb-1"
             >
               <AccordionTrigger className="text-lg font-medium hover:no-underline cursor-pointer">
                 API Key from Environment Variable

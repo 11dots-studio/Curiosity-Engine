@@ -147,8 +147,8 @@ function AppIcons({
                 >
                   <Link
                     to={item.to}
-                    className={`flex flex-col items-center gap-1 h-14 mb-2 rounded-2xl ${
-                      isActive ? "bg-sidebar-accent" : ""
+                    className={`flex flex-col items-center gap-1.5 h-[60px] justify-center mb-3 rounded-xl transition-colors duration-200 ${
+                      isActive ? "bg-sidebar-accent/80 text-sidebar-accent-foreground shadow-sm" : "hover:bg-sidebar-accent/40"
                     }`}
                     onMouseEnter={() => {
                       if (item.title === "Apps") {
@@ -159,8 +159,8 @@ function AppIcons({
                     }}
                   >
                     <div className="flex flex-col items-center gap-1">
-                      <item.icon className="h-5 w-5" />
-                      <span className={"text-xs"}>{item.title}</span>
+                      <item.icon className="h-5 w-5 opacity-90" />
+                      <span className={"text-[11px] font-medium tracking-wide"}>{item.title}</span>
                     </div>
                   </Link>
                 </SidebarMenuButton>

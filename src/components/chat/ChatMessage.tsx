@@ -12,15 +12,15 @@ const ChatMessage = memo(
   ({ message }: ChatMessageProps) => {
     return (
       <div
-        className={`flex ${
+        className={`flex w-full mb-8 ${
           message.role === "assistant" ? "justify-start" : "justify-end"
         }`}
       >
         <div
-          className={`rounded-lg p-2 mt-2 ${
+          className={`transition-all duration-200 mt-2 ${
             message.role === "assistant"
-              ? "w-full max-w-3xl mx-auto"
-              : "bg-(--sidebar-accent)"
+              ? "w-full max-w-3xl mx-auto py-2 px-2"
+              : "bg-primary/5 text-foreground border border-primary/10 dark:bg-primary/20 dark:border-primary/20 rounded-2xl px-5 py-3.5 max-w-[85%] shadow-sm"
           }`}
         >
           {message.role === "assistant" && !message.content ? (
@@ -60,7 +60,7 @@ const ChatMessage = memo(
             </div>
           ) : (
             <div
-              className="prose dark:prose-invert prose-headings:mb-2 prose-p:my-1 prose-pre:my-0 max-w-none"
+              className="prose dark:prose-invert prose-headings:mb-3 prose-headings:font-semibold prose-p:my-2 prose-pre:my-0 max-w-none text-base leading-relaxed tracking-[0.01em]"
               suppressHydrationWarning
             >
               <CuriosityEngineMarkdownParser content={message.content} />
